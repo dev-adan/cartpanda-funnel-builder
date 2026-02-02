@@ -103,15 +103,31 @@ function FunnelBuilder() {
       event.preventDefault();
 
       const type = event.dataTransfer.getData('application/reactflow') as NodeType;
-      if (!type || !NODE_TEMPLATES[type]) return;
+      if (!type || !NODE_TEMPLATES[type]) {
+        console.log('Invalid node type:', type);
+        return;
+      }
 
       const template = NODE_TEMPLATES[type];
-      const position = reactFlowInstance?.screenToFlowPosition({
+      
+      // Get position - use wrapper bounds as fallback
+      let position = reactFlowInstance?.screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
 
-      if (!position) return;
+      if (!position && reactFlowWrapper.current) {
+        const bounds = reactFlowWrapper.current.getBoundingClientRect();
+        position = {
+          x: event.clientX - bounds.left,
+          y: event.clientY - bounds.top,
+        };
+      }
+
+      if (!position) {
+        console.log('No position available');
+        return;
+      }
 
       let label = template.label;
       const newCounters = { ...counters };
