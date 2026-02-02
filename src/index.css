@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f8fafc;
+}
+
+/* React Flow customizations */
+.react-flow__node {
+  cursor: grab;
+}
+
+.react-flow__node:active {
+  cursor: grabbing;
+}
+
+.react-flow__edge-path {
+  stroke-width: 2;
+}
+
+.react-flow__controls {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
