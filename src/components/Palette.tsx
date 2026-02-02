@@ -5,9 +5,10 @@ import type { NodeType } from '../types/nodes';
 interface PaletteProps {
   onExport: () => void;
   onImport: () => void;
+  onAddNode?: (type: NodeType) => void;
 }
 
-const Palette = ({ onExport, onImport }: PaletteProps) => {
+const Palette = ({ onExport, onImport, onAddNode }: PaletteProps) => {
   const onDragStart = (event: DragEvent<HTMLDivElement>, nodeType: NodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -22,7 +23,7 @@ const Palette = ({ onExport, onImport }: PaletteProps) => {
       <div className="p-4 border-b border-gray-200">
         <h2 className="font-bold text-lg text-gray-800">Funnel Builder</h2>
         <p className="text-xs text-gray-500 mt-1">
-          Drag nodes to the canvas to build your funnel
+          Tap or drag nodes to the canvas
         </p>
       </div>
 
@@ -37,15 +38,16 @@ const Palette = ({ onExport, onImport }: PaletteProps) => {
               key={template.type}
               draggable
               onDragStart={(e) => onDragStart(e, template.type)}
+              onClick={() => onAddNode?.(template.type)}
               className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-grab 
                          hover:bg-gray-100 active:cursor-grabbing transition-colors
                          border border-transparent hover:border-gray-200"
               role="button"
-              aria-label={`Drag to add ${template.label}`}
+              aria-label={`Tap or drag to add ${template.label}`}
               tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                  // Could implement keyboard drop
+                  onAddNode?.(template.type);
                 }
               }}
             >

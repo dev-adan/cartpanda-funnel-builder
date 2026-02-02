@@ -157,6 +157,42 @@ function FunnelBuilder() {
     [reactFlowInstance, counters, setNodes]
   );
 
+  // Handle tap-to-add for mobile
+  const handleAddNode = useCallback(
+    (type: NodeType) => {
+      const template = NODE_TEMPLATES[type];
+      
+      // Place in center of visible canvas
+      const centerX = 100 + nodes.length * 50;
+      const centerY = 100 + (nodes.length % 3) * 150;
+      
+      let label = template.label;
+      const newCounters = { ...counters };
+
+      if (type === 'upsell' || type === 'downsell') {
+        newCounters[type] = (newCounters[type] || 0) + 1;
+        label = `${template.label} ${newCounters[type]}`;
+        setCounters(newCounters);
+        saveNodeCounters(newCounters);
+      }
+
+      const newNode: Node = {
+        id: `${type}-${Date.now()}`,
+        type: 'funnel',
+        position: { x: centerX, y: centerY },
+        data: {
+          label,
+          type,
+          buttonLabel: template.buttonLabel,
+          icon: template.icon,
+        },
+      };
+
+      setNodes((nds) => [...nds, newNode]);
+    },
+    [nodes.length, counters, setNodes]
+  );
+
   const handleExport = useCallback(() => {
     const data = { nodes, edges };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -201,7 +237,7 @@ function FunnelBuilder() {
 
   return (
     <div className="flex h-screen w-screen">
-      <Palette onExport={handleExport} onImport={handleImport} />
+      <Palette onExport={handleExport} onImport={handleImport} onAddNode={handleAddNode} />
       
       <div className="flex-1 relative" ref={reactFlowWrapper}>
         <ReactFlow
